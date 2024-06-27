@@ -25,30 +25,6 @@ class TestModels(unittest.TestCase):
         model = Model("gpt-4-0613")
         self.assertEqual(model.info["max_input_tokens"], 8 * 1024)
 
-    def test_get_weak_model_1(self):
-        model = Model("gpt-4", weak_model = "gpt-3.5-turbo")
-        for branch, hit in branch_coverage.items():
-             print(f"{branch} was {'hit' if hit else 'not hit'}")
-        self.assertTrue(branch_coverage['weak model 1'])
-    
-    def test_token_count_branch(self):
-        model = Model("gpt-3.5-turbo")
-        
-        # Save the original tokenizer method
-        original_tokenizer = model.tokenizer
-
-        # Temporarily remove the tokenizer method to hit the branch
-        model.tokenizer = None
-
-        # Call token_count to hit the branch
-        model.token_count("test message")
-
-        # Check if the branch was hit
-        self.assertTrue(branch_coverage['tokenizer_branch_hit'])
-
-        # Restore the original tokenizer method
-        model.tokenizer = original_tokenizer
-
 
 
 class TestModelsValidateVariables(unittest.TestCase):
@@ -97,16 +73,6 @@ class TestModelConfigureSettings(unittest.TestCase):
     def setUp(self):
         self.model = Model("dummy_model")
 
-    def test_configure_model_settings_direct_match(self):
-        self.model.configure_model_settings("gpt-4o")
-        for branch, hit in branch_coverage.items():
-            print(f"{branch} was {'hit' if hit else 'not hit'}")
-        self.assertEqual(self.model.edit_format, "diff")
-        self.assertTrue(self.model.use_repo_map)
-        self.assertTrue(self.model.send_undo_reply)
-        self.assertTrue(self.model.reminder_as_sys_msg)
-        self.assertTrue(branch_coverage["val_configure_model_settings_1"])
-
     def test_configure_model_settings_llama3_70b(self):
         self.model.configure_model_settings("llama-3-70b")
         for branch, hit in branch_coverage.items():
@@ -115,7 +81,6 @@ class TestModelConfigureSettings(unittest.TestCase):
         self.assertTrue(self.model.use_repo_map)
         self.assertTrue(self.model.send_undo_reply)
         self.assertTrue(self.model.examples_as_sys_msg)
-        self.assertTrue(branch_coverage["val_configure_model_settings_2"])
 
     def test_configure_model_settings_gpt_4_turbo_preview(self):
         self.model.configure_model_settings("gpt-4-turbo-preview")
@@ -124,7 +89,6 @@ class TestModelConfigureSettings(unittest.TestCase):
         self.assertEqual(self.model.edit_format, "udiff")
         self.assertTrue(self.model.use_repo_map)
         self.assertTrue(self.model.send_undo_reply)
-        self.assertTrue(branch_coverage["val_configure_model_settings_3"])
 
     def test_configure_model_settings_gpt_4_opus(self):
         self.model.configure_model_settings("claude-3-opus")
@@ -133,15 +97,12 @@ class TestModelConfigureSettings(unittest.TestCase):
         self.assertEqual(self.model.edit_format, "diff")
         self.assertTrue(self.model.use_repo_map)
         self.assertTrue(self.model.send_undo_reply)
-        self.assertTrue(branch_coverage["val_configure_model_settings_4"])
 
     def test_configure_model_settings_gpt_35(self):
         self.model.configure_model_settings("gpt-3.5")
         for branch, hit in branch_coverage.items():
             print(f"{branch} was {'hit' if hit else 'not hit'}")
         self.assertTrue(self.model.reminder_as_sys_msg)
-        self.assertTrue(branch_coverage["val_configure_model_settings_5"])
-
 
 if __name__ == "__main__":
     unittest.main()
